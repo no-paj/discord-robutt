@@ -21,13 +21,13 @@ class Core(discord.Client):
 			} for plugin in kwargs.get('plugins')
 		]
 
-	def _start_all_plugins(self):
+	def start_all_plugins(self):
 		"""Starts all the plugins"""
 
 		for plug in self.plugins:
 			plug['instance'] = plug['plugin'](core=self)
 
-	def _stop_plugin(self, name):
+	def stop_plugin(self, name):
 		""""Stops a particular plugin by its name"""
 
 		for index, plug in enumerate(self.plugins):
@@ -41,7 +41,7 @@ class Core(discord.Client):
 		print 'Plugin '+name+' not found.'
 		return False
 
-	def _start_plugin(self, name):
+	def start_plugin(self, name):
 		"""Starts a particular plugin by its name"""
 
 		for index, plug in enumerate(self.plugins):
@@ -64,7 +64,7 @@ class Core(discord.Client):
 
 	def on_ready(self):
 		"""Called when the client is running and is ready"""
-		self._start_all_plugins()
+		self.start_all_plugins()
 
 	def on_message(self, message):
 		"""Called whenever a message is posted
