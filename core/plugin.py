@@ -1,7 +1,8 @@
 class Plugin:
 
-	def __init__(self, name, core):
-		self.name = name
+	name = __name__
+
+	def __init__(self, core):
 		self.core = core
 		self.at_start()
 

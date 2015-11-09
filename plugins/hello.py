@@ -5,6 +5,8 @@ import discord
 
 class Hello(Plugin):
 
+	name = 'Hello'
+
 	def at_start(self):
 		print 'Plugin Hello launched !'
 
@@ -12,7 +14,7 @@ class Hello(Plugin):
 		self.say_hello(message)
 
 	def __init__(self, core):
-		Plugin.__init__(self, name='Hello', core=core)
+		Plugin.__init__(self, core=core)
 
 	@Command('hi')
 	def say_hello(self, message):

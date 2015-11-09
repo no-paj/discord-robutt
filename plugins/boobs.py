@@ -8,6 +8,8 @@ import requests
 
 class Boobs(Plugin):
 
+	name = 'Boobs'
+
 	def at_start(self):
 		print 'Plugin Boobs launched !'
 
@@ -15,7 +17,7 @@ class Boobs(Plugin):
 		self.boobs(message)
 
 	def __init__(self, core):
-		Plugin.__init__(self, name='Boobs', core=core)
+		Plugin.__init__(self, core=core)
 
 	@Command('boobs')
 	def boobs(self, message):
