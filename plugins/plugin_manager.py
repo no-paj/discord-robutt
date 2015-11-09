@@ -14,8 +14,10 @@ class PluginManager(Plugin):
 
 	@Command('plugin-list')
 	def plugin_list(self, message):
+		response = ''
 		for plug in self.core.plugins:
-			response = plug['plugin'].name
+			response += plug['plugin'].name
 			if plug['instance'] is not None:
 				response += ' | Running'
-			self.core.send_message(message.channel, response)
+			response += '\n'
+		self.core.send_message(message.channel, '```'+response+'```')
