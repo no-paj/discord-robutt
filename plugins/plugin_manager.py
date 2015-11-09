@@ -19,5 +19,5 @@ class PluginManager(Plugin):
 			response += plug['plugin'].name
 			if plug['instance'] is not None:
 				response += ' | Running'
-			response += '\n'
-		self.core.send_message(message.channel, '```'+response+'```')
+			response += " \n"
+		self.core.send_message(message.channel, '```\n'+response+'```')

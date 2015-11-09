@@ -1,26 +1,37 @@
 import discord
 
+from shlex import shlex
 
 class Command:
 
-	def __init__(self, name, startswith=False):
+	def __init__(self, name, trigger='>', options=0):
 		assert isinstance(name, basestring)
 
 		self.name = name
-		self.trigger = "_"
-		self.cmd = self.trigger+self.name
-		self.startswith = startswith
+		self.trigger = trigger
+		self.cmd = self.name
+		self.options = options
 
 	def __call__(self, f):
+
 		def wrapped(core, msg):
 			assert isinstance(msg, discord.Message)
-
-			if self.startswith:
-				if msg.content.startswith(self.cmd) and len(msg.content) > len(self.cmd):
-					arg = msg.content.split(' ', 1)[1]
-					f(core, msg, [arg])
-			else:
-				if msg.content == self.cmd:
-					f(core, msg)
+			sh = shlex(msg.content)
+			print 'before'
+			if sh.get_token() == self.trigger:
+				print 'trig'
+				if sh.get_token() == self.name:
+					print 'name'
+					#Good command
+					options = []
+					#Puting options
+					for i in range(self.options):
+						print 'option'+str(i)
+						options = [sh.get_token()] + options
+					#Good number of options
+					if sh.get_token() == '':
+						print 'good number'
+						msg.options = options
+						f(core, msg)
 
 		return wrapped
