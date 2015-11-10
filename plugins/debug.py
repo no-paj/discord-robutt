@@ -20,11 +20,15 @@ class Debug(Plugin):
 
 	def on_message(self, message):
 		self.evaluate(message)
+		self.get_cid(message)
+		self.get_uid(message)
 
 	def __init__(self, core):
 		Plugin.__init__(self, core=core)
 
 		self.evaluate = Protector(user_ids=core.config['ADMINS'])(self.evaluate)
+		self.get_cid = Protector(user_ids=core.config['ADMINS'])(self.get_cid)
+		self.get_uid = Protector(user_ids=core.config['ADMINS'])(self.get_uid)
 
 	@Command('^eval (.*)$')
 	def evaluate(self, message):
@@ -37,4 +41,11 @@ class Debug(Plugin):
 			response = '```python\n'+e+'```'
 			self.core.send_message(message.channel,  "```\shell\n{}```".format(__import__('traceback').format_exc()))
 			raise
+	
+	@Command('^uid <@([0-9]*)>')
+	def get_uid(self, message):
+		self.core.send_message(message.channel, "{}'s UID :  `{}`".format("<@{}>".format(message.options[0]), message.options[0]))
 
+	@Command('^cid <#([0-9]*)>')
+	def get_cid(self, message):
+		self.core.send_message(message.channel, "{}'s CID :  `{}`".format("<#{}>".format(message.options[0]), message.options[0]))

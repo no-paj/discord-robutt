@@ -17,11 +17,12 @@ class Command:
 
 		def wrapped(core, msg):
 			assert isinstance(msg, discord.Message)
-			if msg.content[0] == self.trigger:
-				options = re.match(self.pattern, msg.content[1:])
-				if options:
-					options = options.groups()
-					msg.options = options
-					f(core, msg)
+			if msg.content:
+				if msg.content[0] == self.trigger:
+					options = re.match(self.pattern, msg.content[1:])
+					if options:
+						options = options.groups()
+						msg.options = options
+						f(core, msg)
 
 		return wrapped
