@@ -14,7 +14,7 @@ class PluginManager(Plugin):
 		self.plugin_stop(message)
 		self.plugin_start(message)
 
-	@Command('plugin-list')
+	@Command('^plugin-list$')
 	def plugin_list(self, message):
 		response = ''
 		for plug in self.core.plugins:
@@ -26,14 +26,14 @@ class PluginManager(Plugin):
 			response += " \n"
 		self.core.send_message(message.channel, '```\n'+response+'```')
 
-	@Command('plugin-stop', options=1)
+	@Command('^plugin-stop ([A-Za-z]+)$')
 	def plugin_stop(self, message):
 		if self.core.stop_plugin(message.options[0]):
 			self.core.send_message(message.channel, '```{} Stopped !```'.format(message.options[0]))
 		else:
 			self.core.send_message(message.channel, '```A problem occured... :(```')
 
-	@Command('plugin-start', options=1)
+	@Command('^plugin-start ([A-Za-z]+)$')
 	def plugin_start(self, message):
 		if self.core.start_plugin(message.options[0]):
 			self.core.send_message(message.channel, '```{} Started !```'.format(message.options[0]))

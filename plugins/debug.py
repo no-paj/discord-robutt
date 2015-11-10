@@ -16,7 +16,7 @@ class Debug(Plugin):
 	name = 'Debug'
 
 	def at_start(self):
-		print 'Plugin Debug launched !'
+		print('Plugin Debug launched !')
 
 	def on_message(self, message):
 		self.evaluate(message)
@@ -26,17 +26,15 @@ class Debug(Plugin):
 
 		self.evaluate = Protector(user_ids=core.config['ADMINS'])(self.evaluate)
 
-	@Command('eval', options=1)
+	@Command('^eval (.*)$')
 	def evaluate(self, message):
 		try:
-			if '`' in message.options[0]:
-				message.options[0] = message.options[0][1:-1]
 			e = eval(message.options[0])
 			response = '```python\n'+str(e)+'```'
 			self.core.send_message(message.channel, response)
 		except:
 			e = "Error : "+sys.exc_info()[0].__name__+" \n "+str(sys.exc_info()[1])
 			response = '```python\n'+e+'```'
-			self.core.send_message(message.channel, response)
+			self.core.send_message(message.channel,  "```\shell\n{}```".format(__import__('traceback').format_exc()))
 			raise
 

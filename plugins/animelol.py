@@ -11,7 +11,7 @@ class Animelol(Plugin):
 	name = 'Animelol'
 
 	def at_start(self):
-		print 'Plugin Animelol launched !'
+		print('Plugin Animelol launched !')
 
 	def on_message(self, message):
 		self.animelol(message)

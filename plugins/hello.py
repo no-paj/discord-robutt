@@ -8,7 +8,7 @@ class Hello(Plugin):
 	name = 'Hello'
 
 	def at_start(self):
-		print 'Plugin Hello launched !'
+		print('Plugin Hello launched !')
 
 	def on_message(self, message):
 		self.say_hello(message)

@@ -1,7 +1,7 @@
 from time import time
 
 import discord
-import config
+import core.config
 
 
 class Core(discord.Client):
@@ -15,7 +15,7 @@ class Core(discord.Client):
 	def __init__(self, **kwargs):
 		discord.Client.__init__(self, **kwargs)
 		self.start_time = time()
-		self.config = config.config
+		self.config = core.config.config
 		self.plugins = [
 			{
 				'instance': None,
@@ -38,9 +38,9 @@ class Core(discord.Client):
 					self.plugins[index]['instance'] = None
 					return True
 				else:
-					print 'Plugin {} not alive.'.format(name)
+					print('Plugin {} not alive.'.format(name))
 					return False
-		print 'Plugin {} not found.'.format(name)
+		print('Plugin {} not found.'.format(name))
 		return False
 
 	def start_plugin(self, name):
@@ -52,9 +52,9 @@ class Core(discord.Client):
 					self.plugins[index]['instance'] = plug['plugin'](core=self)
 					return True
 				else:
-					print 'Plugin {} already alive.'.format(name)
+					print('Plugin {} already alive.'.format(name))
 					return False
-		print 'Plugin {} not found.'.format(name)
+		print('Plugin {} not found.'.format(name))
 		return False
 
 	def run_time(self):

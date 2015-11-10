@@ -17,7 +17,7 @@ class Look(Plugin):
 	def on_message(self, message):
 		self.look(message)
 
-	@Command('look', options=1)
+	@Command('^look <@([0-9]*)>$')
 	def look(self, message):
 		assert isinstance(message, discord.Message)
 		if message.mentions:

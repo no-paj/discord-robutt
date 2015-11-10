@@ -1,36 +1,27 @@
 import discord
+import re
 
 from shlex import shlex
-from config import config
+from core.config import config
 
 
 class Command:
 
-	def __init__(self, name, trigger=config['DEFAULT_TRIGGER'], options=0):
-		assert isinstance(name, basestring)
+	def __init__(self, pattern, trigger=config['DEFAULT_TRIGGER'], options=0):
 
-		self.name = name
+		self.pattern = pattern
 		self.trigger = trigger
-		self.cmd = self.name
 		self.options = options
 
 	def __call__(self, f):
 
 		def wrapped(core, msg):
 			assert isinstance(msg, discord.Message)
-			sh = shlex(msg.content)
-			sh.quotes += '`'
-			sh.wordchars+='-<>@'
-			if sh.get_token() == self.trigger:
-				if sh.get_token() == self.name:
-					#Good command
-					options = []
-					#Puting options
-					for i in range(self.options):
-						options = [sh.get_token()] + options
-					#Good number of options
-					if sh.get_token() == '':
-						msg.options = options
-						f(core, msg)
+			if msg.content[0] == self.trigger:
+				options = re.match(self.pattern, msg.content[1:])
+				if options:
+					options = options.groups()
+					msg.options = options
+					f(core, msg)
 
 		return wrapped

@@ -11,7 +11,7 @@ class Boobs(Plugin):
 	name = 'Boobs'
 
 	def at_start(self):
-		print 'Plugin Boobs launched !'
+		print('Plugin Boobs launched !')
 
 	def on_message(self, message):
 		self.boobs(message)
