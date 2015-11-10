@@ -17,8 +17,8 @@ class Look(Plugin):
 	def on_message(self, message):
 		self.look(message)
 
-	@Command('look', startswith=True)
-	def look(self, message, args):
+	@Command('look', options=1)
+	def look(self, message):
 		assert isinstance(message, discord.Message)
 		if message.mentions:
 			for mention in message.mentions:

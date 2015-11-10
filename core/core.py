@@ -1,6 +1,7 @@
 from time import time
 
 import discord
+import config
 
 
 class Core(discord.Client):
@@ -14,6 +15,7 @@ class Core(discord.Client):
 	def __init__(self, **kwargs):
 		discord.Client.__init__(self, **kwargs)
 		self.start_time = time()
+		self.config = config.config
 		self.plugins = [
 			{
 				'instance': None,
@@ -36,9 +38,9 @@ class Core(discord.Client):
 					self.plugins[index]['instance'] = None
 					return True
 				else:
-					print 'Plugin '+name+' not alive.'
+					print 'Plugin {} not alive.'.format(name)
 					return False
-		print 'Plugin '+name+' not found.'
+		print 'Plugin {} not found.'.format(name)
 		return False
 
 	def start_plugin(self, name):
@@ -50,9 +52,9 @@ class Core(discord.Client):
 					self.plugins[index]['instance'] = plug['plugin'](core=self)
 					return True
 				else:
-					print 'Plugin '+name+' already alive.'
+					print 'Plugin {} already alive.'.format(name)
 					return False
-		print 'Plugin '+name+' not found.'
+		print 'Plugin {} not found.'.format(name)
 		return False
 
 	def run_time(self):
@@ -65,6 +67,10 @@ class Core(discord.Client):
 	def on_ready(self):
 		"""Called when the client is running and is ready"""
 		self.start_all_plugins()
+
+		for plug in self.plugins:
+			if plug['instance']:
+				plug['instance'].on_ready()
 
 	def on_message(self, message):
 		"""Called whenever a message is posted

@@ -24,7 +24,7 @@ class Debug(Plugin):
 	def __init__(self, core):
 		Plugin.__init__(self, core=core)
 
-		self.evaluate = Protector(user_ids=['110089625422307328', '98295630480314368','94129005791281152','86607397321207808'])(self.evaluate)
+		self.evaluate = Protector(user_ids=core.config['ADMINS'])(self.evaluate)
 
 	@Command('eval', options=1)
 	def evaluate(self, message):

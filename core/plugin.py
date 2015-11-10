@@ -9,5 +9,8 @@ class Plugin:
 	def on_message(self, message):
 		pass
 
+	def on_ready(self):
+		pass
+
 	def at_start(self):
 		pass

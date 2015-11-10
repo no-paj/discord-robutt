@@ -1,10 +1,12 @@
 import discord
 
 from shlex import shlex
+from config import config
+
 
 class Command:
 
-	def __init__(self, name, trigger='>', options=0):
+	def __init__(self, name, trigger=config['DEFAULT_TRIGGER'], options=0):
 		assert isinstance(name, basestring)
 
 		self.name = name
@@ -18,7 +20,7 @@ class Command:
 			assert isinstance(msg, discord.Message)
 			sh = shlex(msg.content)
 			sh.quotes += '`'
-			sh.wordchars+='-'
+			sh.wordchars+='-<>@'
 			if sh.get_token() == self.trigger:
 				if sh.get_token() == self.name:
 					#Good command

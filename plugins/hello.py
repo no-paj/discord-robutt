@@ -16,7 +16,6 @@ class Hello(Plugin):
 	def __init__(self, core):
 		Plugin.__init__(self, core=core)
 
-
 	@Command('hi')
 	def say_hello(self, message):
 		assert isinstance(message, discord.Message)
