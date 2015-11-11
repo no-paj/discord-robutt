@@ -1,8 +1,6 @@
 import sys
 from core.plugin import Plugin
-from core.decorators import Command, example
-from core.protector import Protector
-from core.restricter import Restricter
+from core.decorators import Command, Example,require_privmsg, require_admin
 import discord
 import json
 from shlex import shlex
@@ -17,12 +15,9 @@ class Debug(Plugin):
     def __init__(self, core):
         Plugin.__init__(self, core=core)
 
-        self.evaluate = Protector(user_ids=core.config['ADMINS'])(self.evaluate)
-        self.get_cid = Protector(user_ids=core.config['ADMINS'])(self.get_cid)
-        self.get_uid = Protector(user_ids=core.config['ADMINS'])(self.get_uid)
-
+    @require_admin
     @Command('^eval (.*)$')
-    @example('{}eval 1+1')
+    @Example('{}eval 1+1')
     def evaluate(self, message):
         '''Self-made backdoor!!!'''
         try:
@@ -35,15 +30,17 @@ class Debug(Plugin):
             self.core.send_message(message.channel, "```\shell\n{}```".format(__import__('traceback').format_exc()))
             raise
 
+    @require_admin
     @Command('^uid <@([0-9]*)>')
-    @example('{}uid @User')
+    @Example('{}uid @User')
     def get_uid(self, message):
         '''Get a user id'''
         self.core.send_message(message.channel,
                                "{}'s UID :  `{}`".format("<@{}>".format(message.options[0]), message.options[0]))
 
+    @require_admin
     @Command('^cid <#([0-9]*)>')
-    @example('{}cid @Channel')
+    @Example('{}cid @Channel')
     def get_cid(self, message):
         '''Get a channel id'''
         self.core.send_message(message.channel,

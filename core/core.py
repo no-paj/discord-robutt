@@ -5,11 +5,11 @@ import core.config
 
 class Core(discord.Client):
     """Represents the core of the Bot. Extends from discord.Client
-	This class is used to add a plugin layer and a database layer to discord.Client
+    This class is used to add a plugin layer and a database layer to discord.Client
 
-	:param list plugins: A list of plugins
+    :param list plugins: A list of plugins
 
-	"""
+    """
 
     def __init__(self, **kwargs):
         discord.Client.__init__(self, **kwargs)
@@ -27,6 +27,7 @@ class Core(discord.Client):
         """Starts all the plugins"""
 
         for plug in self.plugins:
+            print(plug['plugin'])
             plug['instance'] = plug['plugin'](core=self)
 
     def stop_plugin(self, name):
@@ -91,8 +92,8 @@ class Core(discord.Client):
     def run_time(self):
         """Give the run time of the instance
 
-		:return: A :int: in seconds
-		"""
+    :return: A :int: in seconds
+        """
         return time() - self.start_time
 
     def on_ready(self):
@@ -103,8 +104,8 @@ class Core(discord.Client):
     def on_message(self, message):
         """Called whenever a message is posted
 
-		:param message: The message that is posted
-		"""
+        :param message: The message that is posted
+        """
 
         for plugin in self.plugins:
             if plugin['instance']:

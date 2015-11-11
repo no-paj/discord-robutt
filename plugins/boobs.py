@@ -1,6 +1,6 @@
 from core.plugin import Plugin
 from core.decorators import Command
-from core.decorators import example
+from core.decorators import Example
 from random import randint
 import discord
 import requests
@@ -11,7 +11,6 @@ class Boobs(Plugin):
 
     def at_start(self):
         print('Plugin Boobs launched !')
-
 
     def __init__(self, core):
         Plugin.__init__(self, core=core)

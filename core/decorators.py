@@ -26,41 +26,30 @@ class Command:
         return wrapped
 
 
-def thread(value):
-    def wrapper(function):
-        function.thread = value
-        return function
-
-    return wrapper
+def thread(f):
+    f.thread = True
+    return f
 
 
-def require_privmsg():
-    def wrapper(function):
-        function.require_privmsg = True
-        return function
-
-    return wrapper
+def require_privmsg(f):
+    f.require_privmsg = True
+    return f
 
 
-def require_chanmsg():
-    def wrapper(function):
-        function.require_chanmsg = True
-        return function
-
-    return wrapper
+def require_chanmsg(f):
+    f.require_chanmsg = True
+    return f
 
 
-def require_admin():
-    def wrapper(function):
-        function.require_admin = True
-        return function
-
-    return wrapper
+def require_admin(f):
+    f.require_admin = True
+    return f
 
 
-def example(text):
-    def wrapper(function):
-        function.example = text
-        return function
+class Example:
+    def __init__(self, text):
+        self.text = text
 
-    return wrapper
+    def __call__(self, f):
+        f.example = self.text
+        return f

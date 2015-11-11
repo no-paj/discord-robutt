@@ -2,7 +2,7 @@ import discord
 import time
 from tabulate import tabulate
 from core.plugin import Plugin
-from core.decorators import Command, example
+from core.decorators import Command, Example
 from core.protector import Protector
 from core.config import config
 
@@ -27,7 +27,7 @@ class Manage(Plugin):
         self.clean = Protector(config['ADMINS'])(self.clean)
 
     @Command('^(join|j) https://discord\.gg/([A-Za-z0-9]*)$')
-    @example('{}join|j invite_url')
+    @Example('{}join|j invite_url')
     def join(self, message):
         '''Join a server'''
         if self.core.accept_invite('https://discord.gg/{}'.format(message.options[1])):
@@ -54,7 +54,7 @@ class Manage(Plugin):
         self.core.send_message(message.channel, '```\n{} ```'.format(response))
 
     @Command('^clean ([0-9]*)$')
-    @example('{}clean number')
+    @Example('{}clean number')
     def clean(self, message):
         '''Clean bot's shit'''
         isinstance(message, discord.Message)
