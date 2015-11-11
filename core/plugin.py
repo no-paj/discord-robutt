@@ -1,16 +1,15 @@
 class Plugin:
+    name = __name__
 
-	name = __name__
+    def __init__(self, core):
+        self.core = core
+        self.at_start()
 
-	def __init__(self, core):
-		self.core = core
-		self.at_start()
+    def on_message(self, message):
+        pass
 
-	def on_message(self, message):
-		pass
+    def on_ready(self):
+        pass
 
-	def on_ready(self):
-		pass
-
-	def at_start(self):
-		pass
+    def at_start(self):
+        pass
