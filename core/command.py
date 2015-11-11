@@ -1,13 +1,13 @@
 import discord
 import re
 
-from shlex import shlex
 from core.config import config
+from functools import wraps
 
 
 class Command:
 
-	def __init__(self, pattern, trigger=config['DEFAULT_TRIGGER'], options=0):
+	def __init__(self, pattern, trigger=config['DEFAULT_TRIGGER'], options=0, usage='', description=''):
 
 		self.pattern = pattern
 		self.trigger = trigger
@@ -15,6 +15,7 @@ class Command:
 
 	def __call__(self, f):
 
+		@wraps(f)
 		def wrapped(core, msg):
 			assert isinstance(msg, discord.Message)
 			if msg.content:

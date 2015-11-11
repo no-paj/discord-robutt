@@ -8,7 +8,7 @@ ADMINS = [
 ]
 
 
-DEFAULT_TRIGGER = '*'
+DEFAULT_TRIGGER = '_'
 
 
 config = {

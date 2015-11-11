@@ -41,7 +41,7 @@ class Debug(Plugin):
 			response = '```python\n'+e+'```'
 			self.core.send_message(message.channel,  "```\shell\n{}```".format(__import__('traceback').format_exc()))
 			raise
-	
+
 	@Command('^uid <@([0-9]*)>')
 	def get_uid(self, message):
 		self.core.send_message(message.channel, "{}'s UID :  `{}`".format("<@{}>".format(message.options[0]), message.options[0]))

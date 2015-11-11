@@ -19,5 +19,5 @@ class Hello(Plugin):
 	@Command('hi')
 	def say_hello(self, message):
 		assert isinstance(message, discord.Message)
-		response = 'Hi ' + message.author + ' !'
+		response = 'Hi {} !'.format(message.author)
 		self.core.send_message(message.author, response)

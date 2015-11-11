@@ -1,3 +1,5 @@
+from functools import wraps
+
 import discord
 
 
@@ -7,6 +9,7 @@ class Restricter:
 		self.channel_id = channel_id
 
 	def __call__(self, f):
+		@wraps(f)
 		def wrapped(msg):
 			assert isinstance(msg, discord.Message)
 

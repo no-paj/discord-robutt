@@ -22,6 +22,7 @@ class Core(discord.Client):
 				'plugin': plugin,
 			} for plugin in kwargs.get('plugins')
 		]
+		self.cmd = []
 
 	def start_all_plugins(self):
 		"""Starts all the plugins"""
@@ -56,6 +57,13 @@ class Core(discord.Client):
 					return False
 		print('Plugin {} not found.'.format(name))
 		return False
+
+	def load_cmd(self, plugin_name):
+		"""Loads all the cmd of a plugin"""
+
+		for plugin in self.plugins:
+			if plugin['instance']:
+				self.
 
 	def run_time(self):
 		"""Give the run time of the instance

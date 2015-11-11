@@ -1,3 +1,5 @@
+from functools import wraps
+
 import discord
 
 
@@ -7,6 +9,7 @@ class Protector:
 		self.user_ids = user_ids
 
 	def __call__(self, f):
+		@wraps(f)
 		def wrapped(msg):
 			assert isinstance(msg, discord.Message)
 
