@@ -14,11 +14,6 @@ class Debug(Plugin):
     def at_start(self):
         print('Plugin Debug launched !')
 
-    def on_message(self, message):
-        self.evaluate(message)
-        self.get_cid(message)
-        self.get_uid(message)
-
     def __init__(self, core):
         Plugin.__init__(self, core=core)
 

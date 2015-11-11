@@ -12,9 +12,6 @@ class Look(Plugin):
     def __init__(self, core):
         Plugin.__init__(self, core=core)
 
-    def on_message(self, message):
-        self.look(message)
-
     @Command('^look <@([0-9]*)>$')
     @example('{}look @User')
     def look(self, message):

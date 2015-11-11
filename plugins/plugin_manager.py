@@ -8,11 +8,6 @@ class PluginManager(Plugin):
     def __init__(self, core):
         Plugin.__init__(self, core)
 
-    def on_message(self, message):
-        self.plugin_list(message)
-        self.plugin_stop(message)
-        self.plugin_start(message)
-
     @Command('^plugin-list$')
     def plugin_list(self, message):
         response = ''

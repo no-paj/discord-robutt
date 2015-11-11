@@ -9,9 +9,6 @@ class Hello(Plugin):
     def at_start(self):
         print('Plugin Hello launched !')
 
-    def on_message(self, message):
-        self.say_hello(message)
-
     def __init__(self, core):
         Plugin.__init__(self, core=core)
 

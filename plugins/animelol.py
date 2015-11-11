@@ -11,9 +11,6 @@ class Animelol(Plugin):
     def at_start(self):
         print('Plugin Animelol launched !')
 
-    def on_message(self, message):
-        self.animelol(message)
-
     def __init__(self, core):
         Plugin.__init__(self, core=core)
 
@@ -24,7 +21,7 @@ class Animelol(Plugin):
         self.images = [image for image in client.subreddit_gallery('animenocontext', sort='time', window='day', page=0)]
 
     @Command('animewtf')
-    def animelol(self, message):
+    def animewtf(self, message):
         '''Anime shows are wonderful...'''
         self.core.send_message(message.channel, self._get_img())
 

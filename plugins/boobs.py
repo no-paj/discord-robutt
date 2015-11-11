@@ -12,8 +12,6 @@ class Boobs(Plugin):
     def at_start(self):
         print('Plugin Boobs launched !')
 
-    def on_message(self, message):
-        self.boobs(message)
 
     def __init__(self, core):
         Plugin.__init__(self, core=core)
