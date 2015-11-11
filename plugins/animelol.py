@@ -27,6 +27,7 @@ class Animelol(Plugin):
 
 	@Command('animewtf')
 	def animelol(self, message):
+		'''Anime shows are wonderful...'''
 		self.core.send_message(message.channel, self._get_img())
 
 	def _get_img(self):

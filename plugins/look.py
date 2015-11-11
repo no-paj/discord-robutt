@@ -1,6 +1,6 @@
 import discord
 
-from core.decorators import Command
+from core.decorators import Command, example
 from core.plugin import Plugin
 
 
@@ -18,7 +18,9 @@ class Look(Plugin):
 		self.look(message)
 
 	@Command('^look <@([0-9]*)>$')
+	@example('{}look @User')
 	def look(self, message):
+		'''These icons are soooo tinyyyy! Pls fix!'''
 		assert isinstance(message, discord.Message)
 		if message.mentions:
 			for mention in message.mentions:

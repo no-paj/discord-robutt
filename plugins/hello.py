@@ -17,7 +17,8 @@ class Hello(Plugin):
 		Plugin.__init__(self, core=core)
 
 	@Command('hi')
-	def say_hello(self, message):
+	def hi(self, message):
+		'''Says hi!'''
 		assert isinstance(message, discord.Message)
 		response = 'Hi {} !'.format(message.author)
 		self.core.send_message(message.author, response)

@@ -36,20 +36,26 @@ def thread(value):
 
 def require_privmsg():
 	def wrapper(function):
-		function.is_privmsg = True
+		function.require_privmsg = True
 		return function
 	return wrapper
 
 
 def require_chanmsg():
 	def wrapper(function):
-		function.is_chanmsg = True
+		function.require_chanmsg = True
 		return function
 	return wrapper
 
 
 def require_admin():
 	def wrapper(function):
-		function.admin = True
+		function.require_admin = True
+		return function
+	return wrapper
+
+def example(text):
+	def wrapper(function):
+		function.example = text
 		return function
 	return wrapper

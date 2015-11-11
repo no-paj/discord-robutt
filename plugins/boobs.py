@@ -1,5 +1,6 @@
 from core.plugin import Plugin
 from core.decorators import Command
+from core.decorators import example
 from random import randint
 
 import discord
@@ -21,6 +22,7 @@ class Boobs(Plugin):
 
 	@Command('boobs')
 	def boobs(self, message):
+		'''Get some boobies !'''
 		assert isinstance(message, discord.Message)
 		response = self._get_boobs()
 		self.core.send_message(message.author, response)

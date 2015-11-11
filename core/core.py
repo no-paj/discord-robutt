@@ -20,9 +20,9 @@ class Core(discord.Client):
 			{
 				'instance': None,
 				'plugin': plugin,
+				'commands': []
 			} for plugin in kwargs.get('plugins')
 		]
-		self.commands = []
 
 	def start_all_plugins(self):
 		"""Starts all the plugins"""
@@ -63,10 +63,31 @@ class Core(discord.Client):
 		for plugin in self.plugins:
 			if plugin['instance']:
 				for func_name in dir(plugin['instance']):
-					func = getattr(plugin['instance'],func_name)
-					if func.command:
-						self.commands += func
-						print '{} command loaded !'.format(func_name)
+					if callable(getattr(plugin['instance'], func_name)):
+						func = getattr(plugin['instance'], func_name)
+						if hasattr(func, 'command'):
+							require_admin = False
+							require_chanmsg = False
+							require_privmsg = False
+							example = ''
+							if hasattr(func, 'require_admin'):
+								require_admin = True
+							if hasattr(func, 'require_privmsg'):
+								require_privmsg = True
+							if hasattr(func, 'require_chanmsg'):
+								require_chanmsg = True
+							if hasattr(func, 'example'):
+								example = func.example
+							cmd = {
+								'name': func_name,
+								'require_admin': require_admin,
+								'require_privmsg': require_privmsg,
+								'require_chanmsg': require_chanmsg,
+								'example': example,
+								'description': func.__doc__,
+							}
+							plugin['commands'].append(cmd)
+							print('{} command loaded !'.format(func_name))
 
 	def run_time(self):
 		"""Give the run time of the instance
@@ -86,5 +107,19 @@ class Core(discord.Client):
 		:param message: The message that is posted
 		"""
 
-		for command in self.commands:
-			command(message)
+		for plugin in self.plugins:
+			if plugin['instance']:
+				for command in plugin['commands']:
+					command_func = getattr(plugin['instance'], command['name'])
+					run = '1'
+					if hasattr(command_func, 'require_admin'):
+						if message.author.id not in self.config['ADMINS']:
+							continue
+					if hasattr(command_func, 'require_privmsg'):
+						if not message.channel.is_private:
+							continue
+					if hasattr(command_func, 'require_chanmsg'):
+						if message.channel.is_private:
+							continue
+
+					command_func(message)
