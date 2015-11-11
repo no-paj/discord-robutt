@@ -24,6 +24,12 @@ class Boobs(Plugin):
 
     def _get_boobs(self):
         boobs = []
-        while not boobs:
+        timeOut=0
+        while not boobs && timeOut<10:
             boobs = requests.get('http://api.oboobs.ru/boobs/get/' + str(randint(42, 9500))).json()
-        return 'http://media.oboobs.ru/' + boobs[0]['preview']
+            timeOut=timeOut+1
+        
+        if timeOut<10:
+            return 'http://media.oboobs.ru/' + boobs[0]['preview']
+        else
+            return 'boobs not found'
