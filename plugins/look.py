@@ -1,6 +1,6 @@
 import discord
 
-from core.command import Command
+from core.decorators import Command
 from core.plugin import Plugin
 
 

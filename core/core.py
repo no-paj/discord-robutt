@@ -22,7 +22,7 @@ class Core(discord.Client):
 				'plugin': plugin,
 			} for plugin in kwargs.get('plugins')
 		]
-		self.cmd = []
+		self.commands = []
 
 	def start_all_plugins(self):
 		"""Starts all the plugins"""
@@ -58,12 +58,15 @@ class Core(discord.Client):
 		print('Plugin {} not found.'.format(name))
 		return False
 
-	def load_cmd(self, plugin_name):
+	def load_commands(self):
 		"""Loads all the cmd of a plugin"""
-
 		for plugin in self.plugins:
 			if plugin['instance']:
-				self.
+				for func_name in dir(plugin['instance']):
+					func = getattr(plugin['instance'],func_name)
+					if func.command:
+						self.commands += func
+						print '{} command loaded !'.format(func_name)
 
 	def run_time(self):
 		"""Give the run time of the instance
@@ -75,10 +78,7 @@ class Core(discord.Client):
 	def on_ready(self):
 		"""Called when the client is running and is ready"""
 		self.start_all_plugins()
-
-		for plug in self.plugins:
-			if plug['instance']:
-				plug['instance'].on_ready()
+		self.load_commands()
 
 	def on_message(self, message):
 		"""Called whenever a message is posted
@@ -86,6 +86,5 @@ class Core(discord.Client):
 		:param message: The message that is posted
 		"""
 
-		for plug in self.plugins:
-			if plug['instance']:
-				plug['instance'].on_message(message)
+		for command in self.commands:
+			command(message)

@@ -8,7 +8,6 @@ from functools import wraps
 class Command:
 
 	def __init__(self, pattern, trigger=config['DEFAULT_TRIGGER']):
-
 		self.pattern = pattern
 		self.trigger = trigger
 
@@ -26,3 +25,31 @@ class Command:
 						f(core, msg)
 		wrapped.command = True
 		return wrapped
+
+
+def thread(value):
+	def wrapper(function):
+		function.thread = value
+		return function
+	return wrapper
+
+
+def require_privmsg():
+	def wrapper(function):
+		function.is_privmsg = True
+		return function
+	return wrapper
+
+
+def require_chanmsg():
+	def wrapper(function):
+		function.is_chanmsg = True
+		return function
+	return wrapper
+
+
+def require_admin():
+	def wrapper(function):
+		function.admin = True
+		return function
+	return wrapper

@@ -1,5 +1,5 @@
 from core.plugin import Plugin
-from core.command import Command
+from core.decorators import Command
 from imgurpython import ImgurClient
 from random import randint
 

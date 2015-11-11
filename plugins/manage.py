@@ -4,7 +4,7 @@ import time
 from tabulate import tabulate
 
 from core.plugin import Plugin
-from core.command import Command
+from core.decorators import Command
 from core.protector import Protector
 
 from core.config import config
