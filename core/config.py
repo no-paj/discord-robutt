@@ -8,4 +8,5 @@ DEFAULT_TRIGGER = '+'
 config = {
     'ADMINS': ADMINS,
     'DEFAULT_TRIGGER': DEFAULT_TRIGGER,
+    'DATABASE': 'database.db'
 }

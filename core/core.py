@@ -3,6 +3,10 @@ from time import time
 import discord
 import core.config
 import logging
+import core.database
+from core import database
+from core.threads import ThreadWrapper
+from peewee import *
 
 
 class Core(discord.Client):
@@ -29,6 +33,13 @@ class Core(discord.Client):
             } for plugin in kwargs.get('plugins')
             ]
         self.logger.info('Plugin(s) loaded.')
+        self.database = database.Database(database='sqlite:///database.db')
+        self.database.add_tables([
+            database.Server,
+            database.Channel,
+            database.User,
+            database.Message
+        ])
 
     def start_all_plugins(self):
         """Starts all the plugins"""
@@ -97,8 +108,8 @@ class Core(discord.Client):
                             'require_chanmsg': require_chanmsg,
                             'example': example,
                             'description': func.__doc__,
+                            'black-list': [],
                         }
-                        # TODO ADD A CHANNEL BLACK-LIST TO EVERY CMD
                         # TODO ADD AN ANTIFLOOD INTERVAL
                         plugin['commands'].append(cmd)
                         logging.info('{} command loaded !'.format(func_name))
@@ -135,8 +146,8 @@ class Core(discord.Client):
                             'require_chanmsg': require_chanmsg,
                             'example': example,
                             'description': func.__doc__,
+                            'black-list': []
                         }
-                        # TODO ADD A CHANNEL BLACK-LIST TO EVERY RULE
                         # TODO ADD AN ANTIFLOOD INTERVAL
                         plugin['rules'].append(cmd)
                         logging.info('{} rule loaded !'.format(func_name))
@@ -206,22 +217,41 @@ class Core(discord.Client):
                 if plugin['instance']:
                     # Fetching the commands
                     for command in plugin['commands']:
+                        # If channel black-listed
+                        if message.channel.id in command['black-list']:
+                            self.logger.info(
+                                '[ CMD NOT AVAILABLE IN THIS CHAN ] Caller : {}'.format(message.author.name))
+                            continue
                         cmd_func = getattr(plugin['instance'], command['name'])
                         options = re.match(cmd_func.pattern, message.content[1:])
                         # check for pattern validation and required specificities
                         if options and self.require_checker(cmd_func, message):
                             options = options.groups()
                             message.options = options
-                            cmd_func(message)
+                            # Check if thread func
+                            if hasattr(cmd_func, 'thread'):
+                                thread = ThreadWrapper(cmd_func, message)
+                                thread.start()
+                            else:
+                                cmd_func(message)
+
 
         # Handling plugin rules
         for plugin in self.plugins:
             if plugin['instance'] is not None:
                 for rule in plugin['rules']:
+                    # If rule black-listed
+                    if message.channel.id in rule['black-list']:
+                        self.logger.info('[ RULE NOT AVAILABLE IN THIS CHAN ] Caller : {}'.format(message.author.name))
+                        continue
                     rule_func = getattr(plugin['instance'], rule['name'])
                     options = re.match(rule_func.pattern, message.content)
                     if options and self.require_checker(rule_func, message):
                         options = options.groups()
                         message.options = options
-                        rule_func(message)
-
+                        # Check if thread func
+                        if hasattr(rule_func, 'thread'):
+                            thread = ThreadWrapper(rule_func, message)
+                            thread.start()
+                        else:
+                            rule_func(message)

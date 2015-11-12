@@ -1,10 +1,13 @@
+import time
+
 from core.plugin import Plugin
-from core.decorators import command
+from core.decorators import command, thread
 from imgurpython import ImgurClient
 from random import randint
 
 
 class Animelol(Plugin):
+
     name = 'Animelol'
 
     def __init__(self, core):
@@ -16,6 +19,7 @@ class Animelol(Plugin):
 
         self.images = [image for image in client.subreddit_gallery('animenocontext', sort='time', window='day', page=0)]
 
+    @thread
     @command('animewtf')
     def animewtf(self, message):
         '''Anime shows are wonderful...'''
