@@ -1,15 +1,9 @@
 from core.plugin import Plugin
-from core.decorators import Command
-from core.decorators import Example
-from random import randint, random
+from core.decorators import command
+from random import randint
 import discord
 import requests
 import argparse
-import lxml
-import sys
-import urllib
-from lxml.html import fromstring
-from lxml.cssselect import CSSSelector
 
 parser = argparse.ArgumentParser()
 parser.add_argument("-n", "--number", type=int, help="found quote by ID from dtc")
@@ -25,13 +19,10 @@ class Quote(object):
     def __init__(self, number):
         self.number = number
         self.url = "http://danstonchat.com/{}.html".format(self.number)
-        try:
-            self.data = urllib.urlopen(self.url)
-        except Exception as e:
-            raise e
-        if self.data.getcode() != 200:
-            print(self.data.getcode())
-        self.html = self.data.read()
+        self.data = requests.get(self.url)
+        if self.data.status_code != 200:
+            print(self.data.status_code)
+        self.html = self.data.text
         self.parse()
 
     def parse(self):
@@ -50,14 +41,14 @@ class Quote(object):
     def return_raw(self):
         return self.end.encode("utf-8")
 
-
 def getlast():
-    lastid = urllib.urlopen("http://danstonchat.com/latest.html").read()
+    global last
+    lastid = requests.get("http://danstonchat.com/latest.html").text
     r = fromstring(lastid)
     sel = CSSSelector('span')
     a = [e.get('id') for e in sel(r)]
     for x in a:
-        if x != None:
+        if x is not None:
             last = x
             break
     if last:
@@ -68,13 +59,10 @@ class Bashfr(Plugin):
 
     name = 'Bashfr'
 
-    def at_start(self):
-        print('Plugin Bashfr launched !')
-
     def __init__(self, core):
         Plugin.__init__(self, core=core)
 
-    @Command('bashfr')
+    @command('bashfr')
     def bashfr(self, message):
         '''Get some old quote !'''
         assert isinstance(message, discord.Message)
@@ -82,5 +70,5 @@ class Bashfr(Plugin):
         self.core.send_message(message.author, response)
 
     def _get_bashfr(self):
-        quote = Quote(random.randint(1, getlast()))
+        quote = Quote(randint(1, getlast()))
         return quote.return_raw()

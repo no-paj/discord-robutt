@@ -4,7 +4,7 @@ from core.config import config
 from functools import wraps
 
 
-class Command:
+class command:
     def __init__(self, pattern, trigger=config['DEFAULT_TRIGGER']):
 
         self.pattern = pattern

@@ -1,19 +1,17 @@
 import discord
-from core.decorators import Command, Example
+from core.decorators import command, example
 from core.plugin import Plugin
 
 
 class Look(Plugin):
-    name = 'Look'
 
-    def at_start(self):
-        print('Plugin ' + self.name + ' launched !')
+    name = 'Look'
 
     def __init__(self, core):
         Plugin.__init__(self, core=core)
 
-    @Command('^look <@([0-9]*)>$')
-    @Example('{}look @User')
+    @command('^look <@([0-9]*)>$')
+    @example('{}look @User')
     def look(self, message):
         '''These icons are soooo tinyyyy! Pls fix!'''
         assert isinstance(message, discord.Message)

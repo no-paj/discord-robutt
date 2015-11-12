@@ -1,15 +1,11 @@
 from core.plugin import Plugin
-from core.decorators import Command
+from core.decorators import command
 from imgurpython import ImgurClient
 from random import randint
-import discord
 
 
 class Animelol(Plugin):
     name = 'Animelol'
-
-    def at_start(self):
-        print('Plugin Animelol launched !')
 
     def __init__(self, core):
         Plugin.__init__(self, core=core)
@@ -20,7 +16,7 @@ class Animelol(Plugin):
 
         self.images = [image for image in client.subreddit_gallery('animenocontext', sort='time', window='day', page=0)]
 
-    @Command('animewtf')
+    @command('animewtf')
     def animewtf(self, message):
         '''Anime shows are wonderful...'''
         self.core.send_message(message.channel, self._get_img())

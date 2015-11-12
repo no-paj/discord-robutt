@@ -2,16 +2,12 @@ import discord
 import time
 from tabulate import tabulate
 from core.plugin import Plugin
-from core.decorators import Command, Example
-from core.protector import Protector
-from core.config import config
+from core.decorators import command, example, require_admin
 
 
 class Manage(Plugin):
-    name = 'Manage'
 
-    def at_start(self):
-        print('Plugin {} launched !'.format('Manage'))
+    name = 'Manage'
 
     def on_message(self, message):
         self.join(message)
@@ -22,23 +18,20 @@ class Manage(Plugin):
     def __init__(self, core):
         Plugin.__init__(self, core=core)
 
-        self.join = Protector(config['ADMINS'])(self.join)
-        self.leave = Protector(config['ADMINS'])(self.leave)
-        self.clean = Protector(config['ADMINS'])(self.clean)
-
-    @Command('^(join|j) https://discord\.gg/([A-Za-z0-9]*)$')
-    @Example('{}join|j invite_url')
+    @command('^(join|j) https://discord\.gg/([A-Za-z0-9]*)$')
+    @example('{}join|j invite_url')
     def join(self, message):
         '''Join a server'''
         if self.core.accept_invite('https://discord.gg/{}'.format(message.options[1])):
             self.core.send_message(message.channel, 'Server joined !')
 
-    @Command('^leave$')
+    @require_admin
+    @command('^leave$')
     def leave(self, message):
         '''Leave the current server'''
         self.core.leave_server(message.channel.server)
 
-    @Command('^servers$')
+    @command('^servers$')
     def servers(self, message):
         '''A list of all servers that the bot is connected to'''
         info = {
@@ -53,8 +46,9 @@ class Manage(Plugin):
         response = tabulate(info, headers="keys", tablefmt="grid")
         self.core.send_message(message.channel, '```\n{} ```'.format(response))
 
-    @Command('^clean ([0-9]*)$')
-    @Example('{}clean number')
+    @require_admin
+    @command('^clean ([0-9]*)$')
+    @example('{}clean number')
     def clean(self, message):
         '''Clean bot's shit'''
         isinstance(message, discord.Message)
@@ -67,10 +61,10 @@ class Manage(Plugin):
                 i += 1
                 self.core.delete_message(msg)
         msg = self.core.send_message(message.channel, "`{} msg deleted ! Channel cleaned.`".format(str(i)))
-        time.sleep(5)
+        time.sleep(3)
         self.core.delete_message(msg)
 
-    @Command('^help$')
+    @command('^help$')
     def help(self, message):
         '''You just called it... Faggot -___-'''
         isinstance(message, discord.Message)
@@ -83,4 +77,11 @@ class Manage(Plugin):
                     response += '``` {}\n'.format('{}{}'.format(self.core.config['DEFAULT_TRIGGER'], cmd['name']))
 
                 response += '\n{}```\n'.format(cmd['description'])
+        self.core.send_message(message.channel, response)
+
+    @command('^uptime$')
+    def uptime(self, message):
+        '''Gives the uptime of the bot'''
+        isinstance(message, discord.Message)
+        response = '```python\n Alive since {} seconds```'.format(self.core.run_time())
         self.core.send_message(message.channel, response)

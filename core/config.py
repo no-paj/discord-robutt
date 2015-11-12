@@ -3,7 +3,7 @@ ADMINS = [
     '94129005791281152'
 ]
 
-DEFAULT_TRIGGER = '&'
+DEFAULT_TRIGGER = '+'
 
 config = {
     'ADMINS': ADMINS,
