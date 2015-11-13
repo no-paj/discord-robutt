@@ -1,3 +1,7 @@
+# TODO ADD A HIDDEN DECORATOR
+# TODO ADD A REQUIRE_OWNER
+# TODO ADD A REQUIRE_BOTCOM
+
 def command(pattern):
     """Make a function a command that follow the given regex pattern.
 
@@ -78,3 +82,35 @@ def example(text):
         f.example = text
         return f
     return wrapped
+
+
+def interval(seconds):
+    """Add an anti-flood layer for the function for each user
+
+    :param sec: seconds till the next cmd is allowed
+    :return: a anti-flood ready function
+    """
+    def wrapped(f):
+        f.interval = seconds
+        return f
+    return wrapped
+
+
+def hidden(f):
+    """Makes the command hidden in {trigger}help"""
+    f.hidden = True
+    return f
+
+
+def require_owner(f):
+    """Makes the command require to be owner of server"""
+    func = require_chanmsg(f)
+    func.require_owner = True
+    return func
+
+
+def require_botcom(f):
+    """Makes the command require to be botcommander"""
+    func = require_chanmsg(f)
+    func.require_botcom = True
+    return func

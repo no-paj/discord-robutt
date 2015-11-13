@@ -8,6 +8,7 @@ from core import database
 from core.threads import ThreadWrapper
 from peewee import *
 
+ # TODO HANDLE ALL OTHER EVENTS
 
 class Core(discord.Client):
     """Represents the core of the Bot. Extends from discord.Client
@@ -146,7 +147,8 @@ class Core(discord.Client):
                             'require_chanmsg': require_chanmsg,
                             'example': example,
                             'description': func.__doc__,
-                            'black-list': []
+                            'black-list': [],
+                            'anti-flood': []
                         }
                         # TODO ADD AN ANTIFLOOD INTERVAL
                         plugin['rules'].append(cmd)
@@ -255,3 +257,4 @@ class Core(discord.Client):
                             thread.start()
                         else:
                             rule_func(message)
+
