@@ -8,7 +8,8 @@ from core import database
 from core.threads import ThreadWrapper
 from peewee import *
 
- # TODO HANDLE ALL OTHER EVENTS
+
+# TODO HANDLE ALL OTHER EVENTS
 
 class Core(discord.Client):
     """Represents the core of the Bot. Extends from discord.Client
@@ -30,7 +31,8 @@ class Core(discord.Client):
                 'plugin': plugin,
                 'commands': [],
                 'rules': [],
-                'cron-tasks': []
+                'cron-tasks': [],
+                'black-list': []
             } for plugin in kwargs.get('plugins')
             ]
         self.logger.info('Plugin(s) loaded.')
@@ -82,18 +84,20 @@ class Core(discord.Client):
         logging.debug('Plugin {} not found.'.format(name))
         return False
 
-    def load_commands(self, plugin):
+    def load_triggers(self, plugin, type):
         """Loads all the cmd of a plugin"""
-        logging.info('[ Loading commands of {} ]'.format(plugin['plugin'].name))
+        logging.info('[ Loading {} of {} ]'.format(type, plugin['plugin'].name))
         if plugin['instance']:
             for func_name in dir(plugin['instance']):
-                if callable(getattr(plugin['instance'], func_name)):
-                    func = getattr(plugin['instance'], func_name)
-                    if hasattr(func, 'command'):
+                func = getattr(plugin['instance'], func_name)
+                if callable(func):
+                    singular_type = type[:-1]
+                    if hasattr(func, singular_type):
                         require_admin = False
                         require_chanmsg = False
                         require_privmsg = False
                         example = ''
+                        interval = None
                         if hasattr(func, 'require_admin'):
                             require_admin = True
                         if hasattr(func, 'require_privmsg'):
@@ -102,7 +106,9 @@ class Core(discord.Client):
                             require_chanmsg = True
                         if hasattr(func, 'example'):
                             example = func.example
-                        cmd = {
+                        if hasattr(func, 'interval'):
+                            interval = func.interval
+                        trigger = {
                             'name': func_name,
                             'require_admin': require_admin,
                             'require_privmsg': require_privmsg,
@@ -110,54 +116,15 @@ class Core(discord.Client):
                             'example': example,
                             'description': func.__doc__,
                             'black-list': [],
+                            'interval': interval,
                         }
-                        # TODO ADD AN ANTIFLOOD INTERVAL
-                        plugin['commands'].append(cmd)
-                        logging.info('{} command loaded !'.format(func_name))
+                        plugin[type].append(trigger)
+                        logging.info('{} {} loaded !'.format(func_name, type))
 
-    def load_all_commands(self):
-        """Loads all the cmd of all plugins"""
+    def load_all_triggers(self, type):
+        """Loads all the triggers of a type  of all plugins"""
         for plugin in self.plugins:
-            self.load_commands(plugin)
-
-    def load_rules(self, plugin):
-        """Loads all the rules of a plugin"""
-        logging.info('[ Loading rules of {} ]'.format(plugin['plugin'].name))
-        if plugin['instance']:
-            for func_name in dir(plugin['instance']):
-                if callable(getattr(plugin['instance'], func_name)):
-                    func = getattr(plugin['instance'], func_name)
-                    if hasattr(func, 'rule'):
-                        require_admin = False
-                        require_chanmsg = False
-                        require_privmsg = False
-                        example = ''
-                        if hasattr(func, 'require_admin'):
-                            require_admin = True
-                        if hasattr(func, 'require_privmsg'):
-                            require_privmsg = True
-                        if hasattr(func, 'require_chanmsg'):
-                            require_chanmsg = True
-                        if hasattr(func, 'example'):
-                            example = func.example
-                        cmd = {
-                            'name': func_name,
-                            'require_admin': require_admin,
-                            'require_privmsg': require_privmsg,
-                            'require_chanmsg': require_chanmsg,
-                            'example': example,
-                            'description': func.__doc__,
-                            'black-list': [],
-                            'anti-flood': []
-                        }
-                        # TODO ADD AN ANTIFLOOD INTERVAL
-                        plugin['rules'].append(cmd)
-                        logging.info('{} rule loaded !'.format(func_name))
-
-    def load_all_rules(self):
-        """Loads all the rules of all plugins"""
-        for plugin in self.plugins:
-            self.load_rules(plugin)
+            self.load_triggers(plugin, type)
 
     def run_time(self):
         """Give the run time of the instance
@@ -186,14 +153,27 @@ class Core(discord.Client):
                     '[ REQUIRE CHAN ] last msg from {} requires CHAN !'.format(
                         message.author.name))
                 return False
+        # check for owner if necessary
+        if hasattr(cmd_func, 'require_owner'):
+            if message.author is message.channel.server.owner:
+                logging.info(
+                    '[ NOT AN OWNER ] {} is not owner of {} !'.format(message.author.name, message.channel.server.name))
+                return False
+        # check for botcom
+        if hasattr(cmd_func, 'require_owner'):
+            if 'Bot Commander' in [r for r in map(lambda r:r.name, message.author.roles)]:
+                logging.info(
+                    '[ NOT A BOTCOM ] {} is not the botcom of {} !'.format(message.author.name,
+                                                                           message.channel.server.name))
+                return False
         # if all is good
         return True
 
     def on_ready(self):
         """Called when the client is running and is ready"""
         self.start_all_plugins()
-        self.load_all_commands()
-        self.load_all_rules()
+        self.load_all_triggers('commands')
+        self.load_all_triggers('rules')
 
     def on_message(self, message):
         """Called whenever a message is posted
@@ -237,7 +217,6 @@ class Core(discord.Client):
                             else:
                                 cmd_func(message)
 
-
         # Handling plugin rules
         for plugin in self.plugins:
             if plugin['instance'] is not None:
@@ -257,4 +236,3 @@ class Core(discord.Client):
                             thread.start()
                         else:
                             rule_func(message)
-

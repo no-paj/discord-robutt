@@ -1,6 +1,4 @@
 # TODO ADD A HIDDEN DECORATOR
-# TODO ADD A REQUIRE_OWNER
-# TODO ADD A REQUIRE_BOTCOM
 
 def command(pattern):
     """Make a function a command that follow the given regex pattern.

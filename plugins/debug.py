@@ -1,4 +1,11 @@
+import os
 import sys
+
+import requests
+import time
+
+from math import floor
+
 from core.plugin import Plugin
 from core.decorators import command, example, require_privmsg, require_admin
 
@@ -14,9 +21,18 @@ class Debug(Plugin):
     @example('{}eval 1+1')
     def evaluate(self, message):
         '''Self-made backdoor!!!'''
+        if 'eval' in message.options[0]:
+            self.core.send_message(message.channel, '``` EZ man ! ```')
+            return True
+        if 'exit' in message.content:
+            self.core.send_message(message.channel, '``` FUCK OFF <3 ```')
+            return True
         try:
+            before = time.time()
             e = eval(message.options[0])
-            response = '```python\n' + str(e) + '```'
+            after = time.time()
+            timer = (after - before) * 1000
+            response = '```python\n {} \n{}\n{} ms```'.format(e, '-'*(len(str(timer))+3), str(timer))
             self.core.send_message(message.channel, response)
         except:
             e = "Error : " + sys.exc_info()[0].__name__ + " \n " + str(sys.exc_info()[1])
@@ -39,7 +55,23 @@ class Debug(Plugin):
                                "{}'s CID :  `{}`".format("<#{}>".format(message.options[0]), message.options[0]))
 
     @require_admin
-    @command('^save (users|server|all)$')
+    @command('^file (core|plugins) ([A-Za-z0-9]*)')
+    def file(self, message):
+        directory = message.options[0]
+        before = time.time()
+        key = requests.post('http://hastebin.com/documents', data=open(
+            os.getcwd() + '\Robutt\{}\{}.py'.format(directory, message.options[1])).read()).json()['key']
+        after = time.time()
+        self.core.send_message(message.channel, 'http://hastebin.com/{} \n `took {} ms`'.format(key, str(
+            floor((after - before) * 1000))))
+
+    @require_admin
+    @command('^exec (.*)')
+    def execute(self, message):
+        exec(message[0])
+
+    @require_admin
+    @command('^save (users)$')
     def save(self, message):
         """Save all users or all channels of the server or both"""
         if message.options[0] == 'users':
@@ -52,8 +84,5 @@ class Debug(Plugin):
                         'avatar': user.avatar,
                         'avatar_url': user.avatar_url(),
                     } for user in message.channel.server.members
-                ]
+                    ]
             ).on_conflict(action='REPLACE').execute()
-        # TODO FINISH THE SAVE CMD
-
-
