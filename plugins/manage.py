@@ -18,11 +18,11 @@ class Manage(Plugin):
     def __init__(self, core):
         Plugin.__init__(self, core=core)
 
-    @command('^(join|j) https://discord\.gg/([A-Za-z0-9]*)$')
+    @command('^(join|j) (https/http)://discord\.gg/([A-Za-z0-9]*)$')
     @example('{}join|j invite_url')
     def join(self, message):
         '''Join a server'''
-        if self.core.accept_invite('https://discord.gg/{}'.format(message.options[1])):
+        if self.core.accept_invite('https://discord.gg/{}'.format(message.options[2])):
             self.core.send_message(message.channel, 'Server joined !')
 
     @require_admin

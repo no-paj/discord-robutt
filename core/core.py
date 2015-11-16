@@ -23,16 +23,15 @@ class Core(discord.Client):
         discord.Client.__init__(self, **kwargs)
         self.logger = logging.getLogger('robutt')
         self.start_time = time()
-        self.config = core.config.config
+        self.config = kwargs.get('conf')
         self.logger.info('Configuration loaded.')
         self.plugins = [
             {
-                'instance': None,
                 'plugin': plugin,
+                'instance': None,
                 'commands': [],
                 'rules': [],
                 'cron-tasks': [],
-                'black-list': []
             } for plugin in kwargs.get('plugins')
             ]
         self.logger.info('Plugin(s) loaded.')
@@ -75,8 +74,8 @@ class Core(discord.Client):
                 if plug['instance'] is None:
                     self.plugins[index]['instance'] = plug['plugin'](core=self)
                     logging.info('Pluging {} alive !'.format(plug['plugin'].name))
-                    self.load_commands(plug)
-                    self.load_rules(plug)
+                    self.load_triggers(plug, 'commands')
+                    self.load_triggers(plug, 'rules')
                     return True
                 else:
                     logging.debug('Plugin {} already alive.'.format(name))
@@ -97,6 +96,8 @@ class Core(discord.Client):
                         require_chanmsg = False
                         require_privmsg = False
                         example = ''
+                        require_owner = False
+                        require_botcom = False
                         interval = None
                         if hasattr(func, 'require_admin'):
                             require_admin = True
@@ -104,6 +105,10 @@ class Core(discord.Client):
                             require_privmsg = True
                         if hasattr(func, 'require_chanmsg'):
                             require_chanmsg = True
+                        if hasattr(func, 'require_owner'):
+                            require_owner = True
+                        if hasattr(func, 'require_botcom'):
+                            require_botcom = True
                         if hasattr(func, 'example'):
                             example = func.example
                         if hasattr(func, 'interval'):
@@ -113,10 +118,14 @@ class Core(discord.Client):
                             'require_admin': require_admin,
                             'require_privmsg': require_privmsg,
                             'require_chanmsg': require_chanmsg,
+                            'require_botcom': require_botcom,
+                            'require_owner': require_owner,
                             'example': example,
                             'description': func.__doc__,
-                            'black-list': [],
-                            'interval': interval,
+                            'interval': {
+                                'delay': interval,
+                                'records': []
+                            },
                         }
                         plugin[type].append(trigger)
                         logging.info('{} {} loaded !'.format(func_name, type))
@@ -197,13 +206,9 @@ class Core(discord.Client):
 
                 # If plugin active !
                 if plugin['instance']:
+                    # If yes then :
                     # Fetching the commands
                     for command in plugin['commands']:
-                        # If channel black-listed
-                        if message.channel.id in command['black-list']:
-                            self.logger.info(
-                                '[ CMD NOT AVAILABLE IN THIS CHAN ] Caller : {}'.format(message.author.name))
-                            continue
                         cmd_func = getattr(plugin['instance'], command['name'])
                         options = re.match(cmd_func.pattern, message.content[1:])
                         # check for pattern validation and required specificities
@@ -219,12 +224,11 @@ class Core(discord.Client):
 
         # Handling plugin rules
         for plugin in self.plugins:
-            if plugin['instance'] is not None:
+            if plugin['instance']:
+
+                # If yes then :
+                # Fetching all the rules
                 for rule in plugin['rules']:
-                    # If rule black-listed
-                    if message.channel.id in rule['black-list']:
-                        self.logger.info('[ RULE NOT AVAILABLE IN THIS CHAN ] Caller : {}'.format(message.author.name))
-                        continue
                     rule_func = getattr(plugin['instance'], rule['name'])
                     options = re.match(rule_func.pattern, message.content)
                     if options and self.require_checker(rule_func, message):

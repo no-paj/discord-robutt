@@ -17,7 +17,7 @@ class Boobs(Plugin):
         '''Get some boobies !'''
         assert isinstance(message, discord.Message)
         response = self._get_boobs()
-        self.core.send_message(message.author, response)
+        self.core.send_message(message.channel, response)
 
     def _get_boobs(self):
         boobs = []
