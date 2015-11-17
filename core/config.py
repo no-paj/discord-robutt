@@ -1,3 +1,6 @@
+from middlewares import simple_plugins
+
+
 ADMINS = [
     '110089625422307328',
     '94129005791281152',
@@ -11,5 +14,8 @@ DEFAULT_TRIGGER = '+'
 config = {
     'ADMINS': ADMINS,
     'DEFAULT_TRIGGER': DEFAULT_TRIGGER,
-    'DATABASE': 'database.db'
+    'DATABASE': 'database.db',
+    'MIDDLEWARES':[
+        simple_plugins.SimplePlugins
+                   ]
 }

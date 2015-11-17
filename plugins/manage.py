@@ -18,7 +18,7 @@ class Manage(Plugin):
     def __init__(self, core):
         Plugin.__init__(self, core=core)
 
-    @command('^(join|j) (https/http)://discord\.gg/([A-Za-z0-9]*)$')
+    @command('^(join|j) (https|http)://discord\.gg/([A-Za-z0-9]*)$')
     @example('{}join|j invite_url')
     def join(self, message):
         '''Join a server'''

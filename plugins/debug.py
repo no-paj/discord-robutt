@@ -68,7 +68,7 @@ class Debug(Plugin):
     @require_admin
     @command('^exec (.*)')
     def execute(self, message):
-        exec(message[0])
+        exec(message.options[0])
 
     @require_admin
     @command('^save (users)$')
