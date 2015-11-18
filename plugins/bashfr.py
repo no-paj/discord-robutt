@@ -5,6 +5,8 @@ import discord
 import requests
 import argparse
 
+# TODO REWRITE WITH BS4 AND REQUESTS
+
 parser = argparse.ArgumentParser()
 parser.add_argument("-n", "--number", type=int, help="found quote by ID from dtc")
 parser.add_argument("-r", "--random", action='store_true', help="Random quote from dtc")

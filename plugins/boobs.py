@@ -17,6 +17,9 @@ class Boobs(Plugin):
         '''Get some boobies !'''
         assert isinstance(message, discord.Message)
         response = self._get_boobs()
+        dickbutt = 'http://i.imgur.com/CE4r5vR.jpg'
+        if message.author.id == '94203228043874304':
+            response = dickbutt
         self.core.send_message(message.channel, response)
 
     def _get_boobs(self):

@@ -1,6 +1,7 @@
 from core.plugin import Plugin
 from core.decorators import command
 
+# TODO REWRITE ALL THE DAMN PLUGIN (OR MAYBE DELETE IT ?)
 
 class PluginManager(Plugin):
 
