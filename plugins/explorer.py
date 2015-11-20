@@ -13,9 +13,12 @@ import requests
 class Explorer(Plugin):
     name = 'Explorer'
 
-    @command('info')
+    def __init__(self, core):
+        Plugin.__init__(self, core=core)
+        self.m = []
+
+    @command('stats')
     def info(self, message):
-        before = time.time()
         servers_number = str(len(self.core.servers))
 
         members = [member for server in self.core.servers for member in server.members]
@@ -26,14 +29,19 @@ class Explorer(Plugin):
         connected_members_number = str(len(set(connected_members)))
         unique_members_number = str(len(unique_members))
 
-        response = '``` Connected to {} different servers with {} unique members total \n ({} connected) !\n --- {} ms ```'.format(
-            servers_number, unique_members_number, connected_members_number, math.floor((time.time() - before)*1000))
+        response = '``` Connected to {} different servers with {} unique members total \n ({} connected) !\n {} msg received ! ```'.format(
+            servers_number, unique_members_number, connected_members_number,
+            str(len(self.m)))
         self.core.send_message(message.channel, response)
 
-    @rule('.*discord.gg/([A-Za-z0-9]*).*')
+
+    @rule('^(.*)')
     def accept_invites(self, message):
-        if self.core.accept_invite('http://discord.gg/' + message.options[0]):
-            self.core.logger.info('# Joining new server ! ')
+        pattern = 'discord.gg\/([A-Za-z0-9]*)'
+        match = re.findall(pattern, message.content)
+        for link in match:
+            if self.core.accept_invite('http://discord.gg/' + link):
+                self.core.logger.info('# Joining new server ! ')
 
     @require_admin
     @command('^vacuum (.*)')
@@ -51,3 +59,18 @@ class Explorer(Plugin):
                 i += 1
         response = '`Joined {} servers !`'.format(str(i))
         self.core.send_message(message.channel, response)
+
+    @command('^msg')
+    def msg(self, message):
+        total = []
+        now = time.time()
+        for m in self.m:
+            if m + 60 >= now:
+                total.append(m)
+        response = '`Message frequency : {} messages / second !`'.format(str(len(total) / 60.0))
+        self.core.send_message(message.channel, response)
+
+    @rule('^(.*)')
+    def message_number(self, message):
+        self.m.append(time.time())
+

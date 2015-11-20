@@ -111,14 +111,16 @@ class SimplePlugins(Middleware):
 
             if options:
                 message.options = options.groups()
-                if message.channel.is_private:
-                   logging.info('[ PRIVATE MESSAGE ] "{}" from {}'.format(message.content, message.author.name))
-                else:
-                   logging.info(
-                    '[ CHANNEL MESSAGE ] "{}" from {} in channel {} of server {}'.format(message.content,
-                                                                                         message.author.name,
-                                                                                         message.channel.name,
-                                                                                         message.channel.server.name))
+
+                if hasattr(trigger, 'command'):
+                    if message.channel.is_private:
+                       logging.info('[ PRIVATE MESSAGE ] "{}" from {}'.format(message.content, message.author.name))
+                    else:
+                       logging.info(
+                        '[ CHANNEL MESSAGE ] "{}" from {} in channel {} of server {}'.format(message.content,
+                                                                                             message.author.name,
+                                                                                             message.channel.name,
+                                                                                             message.channel.server.name))
                 if not self.require_checker(trigger, message):
                     continue
 

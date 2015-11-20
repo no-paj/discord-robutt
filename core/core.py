@@ -30,9 +30,6 @@ class Core(discord.Client):
             {
                 'plugin': plugin,
                 'instance': None,
-                'commands': [],
-                'rules': [],
-                'cron-tasks': [],
             } for plugin in kwargs.get('plugins')
             ]
         self.logger.info('Plugin(s) loaded.')
