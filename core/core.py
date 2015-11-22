@@ -1,12 +1,8 @@
-import re
 from time import time
 import discord
 from pymongo import MongoClient
 
 import logging
-from core.threads import ThreadWrapper
-from peewee import *
-
 
 # TODO HANDLE ALL OTHER EVENTS
 
