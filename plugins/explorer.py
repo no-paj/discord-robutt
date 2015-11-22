@@ -74,7 +74,7 @@ class Explorer(Plugin):
     def message_number(self, message):
         self.m.append(time.time())
 
-    @cron(60)
+    @cron(900)
     def snapshot(self):
 
         servers_number = len(self.core.servers)
