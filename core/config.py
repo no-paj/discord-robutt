@@ -1,4 +1,4 @@
-from middlewares import simple_plugins
+from ..middlewares import simple_plugins
 
 
 ADMINS = [

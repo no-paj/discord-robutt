@@ -1,5 +1,6 @@
-from core.core import Core
+
+from core import core
 
 
-class Bot(Core):
+class Bot(core.Core):
     pass
