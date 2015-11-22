@@ -1,3 +1,4 @@
+import logging
 import re
 
 import time
@@ -5,7 +6,7 @@ import time
 import math
 from bs4 import BeautifulSoup
 
-from core.decorators import rule, require_admin, command
+from core.decorators import rule, require_admin, command, cron
 from core.plugin import Plugin
 import requests
 
@@ -73,3 +74,28 @@ class Explorer(Plugin):
     def message_number(self, message):
         self.m.append(time.time())
 
+    @cron(60)
+    def snapshot(self):
+
+        servers_number = len(self.core.servers)
+
+        members = [member for server in self.core.servers for member in server.members]
+        unique_members = set(map(lambda x: x.id, members))
+
+        connected_members = [member.id for member in members if member.status != 'offline']
+        playing_members = [member.game_id for member in members if member.game_id]
+
+        connected_members_number = len(set(connected_members))
+        playing_members_number = len(set(playing_members))
+
+        snap = {
+            'servers': servers_number,
+            'online': connected_members_number,
+            'playing': playing_members_number,
+            'timestamp': time.time()
+        }
+
+        snapshots = self.core.db.snapshots
+        snapshots.save(snap)
+
+        logging.info('Snapshot saved !')
