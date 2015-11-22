@@ -97,6 +97,8 @@ class SimplePlugins(Middleware):
         return True
 
     def interval_checker(self, plugin, cmd_func, message):
+        if message.author.id in self.core.config['ADMINS']:
+            return True
         # check if the cmd is with interval
         if hasattr(cmd_func, 'interval'):
 

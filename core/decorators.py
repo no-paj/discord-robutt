@@ -1,4 +1,3 @@
-# TODO ADD A HIDDEN DECORATOR
 
 def command(pattern):
     """Make a function a command that follow the given regex pattern.
