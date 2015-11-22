@@ -34,7 +34,6 @@ class Explorer(Plugin):
             str(len(self.m)))
         self.core.send_message(message.channel, response)
 
-
     @rule('^(.*)')
     def accept_invites(self, message):
         pattern = 'discord.gg\/([A-Za-z0-9]*)'

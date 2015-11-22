@@ -1,13 +1,10 @@
 import os
 import sys
-
 import requests
 import time
-
 from math import floor
-
 from core.plugin import Plugin
-from core.decorators import command, example, require_privmsg, require_admin, interval
+from core.decorators import command, example, require_privmsg, require_admin, interval, cron
 
 
 class Debug(Plugin):
@@ -32,7 +29,7 @@ class Debug(Plugin):
             e = eval(message.options[0])
             after = time.time()
             timer = (after - before) * 1000
-            response = '```python\n {} \n{}\n{} ms```'.format(e, '-'*(len(str(timer))+3), str(timer))
+            response = '```python\n {} \n{}\n{} ms```'.format(e, '-' * (len(str(timer)) + 3), str(timer))
             self.core.send_message(message.channel, response)
         except:
             e = "Error : " + sys.exc_info()[0].__name__ + " \n " + str(sys.exc_info()[1])
@@ -86,3 +83,4 @@ class Debug(Plugin):
                     } for user in message.channel.server.members
                     ]
             ).on_conflict(action='REPLACE').execute()
+
