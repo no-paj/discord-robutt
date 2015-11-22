@@ -99,3 +99,24 @@ class Explorer(Plugin):
         snapshots.save(snap)
 
         logging.info('Snapshot saved !')
+
+    @cron(300)
+    def servers(self):
+
+        for server in self.core.servers:
+            members_number = len(server.members)
+            online_number = len([member.id for member in server.members if member.status != 'offline'])
+            data = {
+                'id': server.id,
+                'name': server.name,
+                'region': server.region,
+                'owner_name': server.owner.name,
+                'icon': server.icon,
+                'members': members_number,
+                'online': online_number
+            }
+            dbentry = self.core.db.servers.find_one({'id': server.id})
+            if dbentry:
+                self.core.db.servers.update({'_id': server.id}, {'$set': data}, upsert=False)
+            else:
+                self.core.db.servers.insert(data)
