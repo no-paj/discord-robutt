@@ -2,6 +2,7 @@ import logging
 import re
 
 import discord
+import time
 
 from core.middleware import Middleware
 from core.threads import ThreadWrapper
@@ -15,7 +16,6 @@ class SimplePlugins(Middleware):
     '''
 
     name = 'Simple Plugins'
-
 
     def start_all_plugins(self):
         """Starts all the plugins"""
@@ -88,7 +88,7 @@ class SimplePlugins(Middleware):
                 return False
         # check for botcom
         if hasattr(cmd_func, 'require_owner'):
-            if 'Bot Commander' in [r for r in map(lambda r:r.name, message.author.roles)]:
+            if 'Bot Commander' in [r for r in map(lambda r: r.name, message.author.roles)]:
                 logging.info(
                     '[ NOT A BOTCOM ] {} is not the botcom of {} !'.format(message.author.name,
                                                                            message.channel.server.name))
@@ -96,11 +96,48 @@ class SimplePlugins(Middleware):
         # if all is good
         return True
 
+    def interval_checker(self, plugin, cmd_func, message):
+        # check if the cmd is with interval
+        if hasattr(cmd_func, 'interval'):
+
+            search = {
+                'plugin': plugin.name,
+                'trigger-name': cmd_func.__name__,
+                'server-id': message.channel.server.id
+            }
+            if not cmd_func.interval['everyone']:
+                search['user-id'] = message.author.id
+
+            interval = self.core.db.intervals.find_one(search)
+
+            if interval:
+                if time.time() - interval['timestamp'] < cmd_func.interval['time']:
+                    if cmd_func.interval['warn']:
+                        self.core.send_message(message.author, 'Actually, this command has a cooldown. Try later. ;)')
+                    return False
+                else:
+                    interval['timestamp'] = time.time()
+                    self.core.db.intervals.update({'_id': interval['_id']}, {'$set': interval}, upsert=False)
+                    return True
+            else:
+                my_interval = {
+                    'plugin': plugin.name,
+                    'trigger-name': cmd_func.__name__,
+                    'user-id': message.author.id,
+                    'server-id': message.channel.server.id,
+                    'timestamp': time.time(),
+                }
+                self.core.db.intervals.insert(my_interval)
+                return True
+        return True
+
     def trigger_handler(self, message, plugin):
         isinstance(message, discord.Message)
 
         # Fetching all the triggers
-        trigger_names = [method_name for method_name in dir(plugin) if hasattr(getattr(plugin, method_name),'command') or hasattr(getattr(plugin, method_name),'rule')]
+        trigger_names = [method_name for method_name in dir(plugin) if
+                         hasattr(getattr(plugin, method_name), 'command') or hasattr(getattr(plugin, method_name),
+                                                                                     'rule')]
         for trigger_name in trigger_names:
 
             trigger = getattr(plugin, trigger_name)
@@ -109,26 +146,27 @@ class SimplePlugins(Middleware):
 
             options = re.match(trigger.pattern, message.content[1:])
 
-            if options:
-                message.options = options.groups()
+            if self.interval_checker(plugin, trigger, message):
+                if options:
+                    message.options = options.groups()
 
-                if hasattr(trigger, 'command'):
-                    if message.channel.is_private:
-                       logging.info('[ PRIVATE MESSAGE ] "{}" from {}'.format(message.content, message.author.name))
+                    if hasattr(trigger, 'command'):
+                        if message.channel.is_private:
+                            logging.info('[ PRIVATE MESSAGE ] "{}" from {}'.format(message.content, message.author.name))
+                        else:
+                            logging.info(
+                                '[ CHANNEL MESSAGE ] "{}" from {} in channel {} of server {}'.format(message.content,
+                                                                                                     message.author.name,
+                                                                                                     message.channel.name,
+                                                                                                     message.channel.server.name))
+                    if not self.require_checker(trigger, message):
+                        continue
+
+                    if hasattr(trigger, 'thread'):
+                        thread = ThreadWrapper(trigger, message)
+                        thread.start()
                     else:
-                       logging.info(
-                        '[ CHANNEL MESSAGE ] "{}" from {} in channel {} of server {}'.format(message.content,
-                                                                                             message.author.name,
-                                                                                             message.channel.name,
-                                                                                             message.channel.server.name))
-                if not self.require_checker(trigger, message):
-                    continue
-
-                if hasattr(trigger, 'thread'):
-                    thread = ThreadWrapper(trigger, message)
-                    thread.start()
-                else:
-                    trigger(message)
+                        trigger(message)
 
     def on_message(self, message):
         for plugin in self.core.plugins:

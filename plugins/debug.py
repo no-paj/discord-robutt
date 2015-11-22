@@ -7,7 +7,7 @@ import time
 from math import floor
 
 from core.plugin import Plugin
-from core.decorators import command, example, require_privmsg, require_admin
+from core.decorators import command, example, require_privmsg, require_admin, interval
 
 
 class Debug(Plugin):
