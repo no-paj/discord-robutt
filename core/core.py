@@ -1,10 +1,11 @@
 import re
 from time import time
 import discord
+from pymongo import MongoClient
+
 import core.config
 import logging
 import core.database
-from core import database
 from core.threads import ThreadWrapper
 from peewee import *
 
@@ -34,13 +35,8 @@ class Core(discord.Client):
             ]
         self.logger.info('Plugin(s) loaded.')
 
-        self.database = database.Database(database='sqlite:///database.db')
-        self.database.add_tables([
-            database.Server,
-            database.Channel,
-            database.User,
-            database.Message
-        ])
+        connection = MongoClient('localhost', 27017)
+        self.db = connection.bot
 
         self._load_middlewares()
 
@@ -61,7 +57,6 @@ class Core(discord.Client):
 
         for middleware in self.middlewares:
             middleware.on_ready()
-
 
     def on_message(self, message):
         """Called whenever a message is posted

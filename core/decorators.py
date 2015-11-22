@@ -82,14 +82,20 @@ def example(text):
     return wrapped
 
 
-def interval(seconds):
+def interval(seconds, everyone=False, warn=True):
     """Add an anti-flood layer for the function for each user
 
-    :param sec: seconds till the next cmd is allowed
+    :param warn: Send a PM warning ?
+    :param everyone: userspecific interval ?
+    :param seconds: seconds till the next cmd is allowed
     :return: a anti-flood ready function
     """
     def wrapped(f):
-        f.interval = seconds
+        f.interval = {
+            'time': seconds,
+            'everyone': everyone,
+            'warn': warn
+        }
         return f
     return wrapped
 
