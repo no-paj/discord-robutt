@@ -30,7 +30,7 @@ class Explorer(Plugin):
         connected_members_number = str(len(set(connected_members)))
         unique_members_number = str(len(unique_members))
 
-        response = '``` Connected to {} different servers with {} unique members total \n ({} connected) !\n {} msg received ! ```'.format(
+        response = '``` Connected to {} different servers with {} unique members total \n ({} connected) !\n {} msg received ! ```\n http://nopaj.co'.format(
             servers_number, unique_members_number, connected_members_number,
             str(len(self.m)))
         self.core.send_message(message.channel, response)
