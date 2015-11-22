@@ -1,8 +1,8 @@
 import discord
 import time
 from tabulate import tabulate
-from core.plugin import Plugin
-from core.decorators import command, example, require_admin
+from ..core.plugin import Plugin
+from ..core.decorators import command, example, require_admin
 
 
 class Manage(Plugin):

@@ -1,6 +1,6 @@
 import discord
-from core.decorators import command, example
-from core.plugin import Plugin
+from ..core.decorators import command, example
+from ..core.plugin import Plugin
 
 
 class Look(Plugin):

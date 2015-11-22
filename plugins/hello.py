@@ -1,5 +1,5 @@
-from core.plugin import Plugin
-from core.decorators import command, rule
+from ..core.plugin import Plugin
+from ..core.decorators import command, rule
 import discord
 
 

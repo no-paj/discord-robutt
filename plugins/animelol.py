@@ -1,7 +1,7 @@
 import time
 
-from core.plugin import Plugin
-from core.decorators import command, thread
+from ..core.plugin import Plugin
+from ..core.decorators import command, thread
 from imgurpython import ImgurClient
 from random import randint
 

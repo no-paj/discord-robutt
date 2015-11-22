@@ -6,8 +6,8 @@ import time
 import math
 from bs4 import BeautifulSoup
 
-from core.decorators import rule, require_admin, command, cron
-from core.plugin import Plugin
+from ..core.decorators import rule, require_admin, command, cron
+from ..core.plugin import Plugin
 import requests
 
 

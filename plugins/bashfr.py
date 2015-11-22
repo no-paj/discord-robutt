@@ -1,5 +1,5 @@
-from core.plugin import Plugin
-from core.decorators import command
+from ..core.plugin import Plugin
+from ..core.decorators import command
 from random import randint
 import discord
 import requests
