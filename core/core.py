@@ -5,7 +5,6 @@ from pymongo import MongoClient
 
 import core.config
 import logging
-import core.database
 from core.threads import ThreadWrapper
 from peewee import *
 

@@ -117,3 +117,12 @@ def require_botcom(f):
     func = require_chanmsg(f)
     func.require_botcom = True
     return func
+
+
+def cron(seconds):
+    """The function is repeated every :seconds secs
+    """
+    def wrapped(f):
+        f.cron = seconds
+        return f
+    return wrapped

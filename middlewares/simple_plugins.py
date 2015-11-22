@@ -4,6 +4,7 @@ import re
 import discord
 import time
 
+from core.cron import CronWrapper
 from core.middleware import Middleware
 from core.threads import ThreadWrapper
 
@@ -58,7 +59,12 @@ class SimplePlugins(Middleware):
         return False
 
     def on_ready(self):
+        # Start plugins
         self.start_all_plugins()
+        # Loading the cron-jobs
+        for plugin in self.core.plugins:
+            if plugin['instance']:
+                self.cron_handler(plugin['instance'])
 
     def require_checker(self, cmd_func, message):
         # check for admin if necessary
@@ -169,6 +175,14 @@ class SimplePlugins(Middleware):
                         thread.start()
                     else:
                         trigger(message)
+
+    def cron_handler(self, plugin):
+        cron_names = [method_name for method_name in dir(plugin) if hasattr(getattr(plugin, method_name), 'cron')]
+        for cron_name in cron_names:
+            func = getattr(plugin, cron_name)
+            cron = CronWrapper(func, func.cron)
+            cron.start()
+
 
     def on_message(self, message):
         for plugin in self.core.plugins:
