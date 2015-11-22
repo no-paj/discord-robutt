@@ -120,3 +120,5 @@ class Explorer(Plugin):
                 self.core.db.servers.update({'_id': server.id}, {'$set': data}, upsert=False)
             else:
                 self.core.db.servers.insert(data)
+
+        logging.info('Servers Snapshot saved !')
