@@ -4,9 +4,9 @@ import re
 import discord
 import time
 
-from core.cron import CronWrapper
-from core.middleware import Middleware
-from core.threads import ThreadWrapper
+from ..core.cron import CronWrapper
+from ..core.middleware import Middleware
+from ..core.threads import ThreadWrapper
 
 
 class SimplePlugins(Middleware):
