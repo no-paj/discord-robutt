@@ -34,6 +34,8 @@ class Core(discord.Client):
 
         self._load_middlewares()
 
+        self.ready_call = False
+
     def _load_middlewares(self):
         ''' Loading all middlewares '''
         for index, middleware in enumerate(self.middlewares):
@@ -48,9 +50,10 @@ class Core(discord.Client):
 
     def on_ready(self):
         """Called when the client is running and is ready"""
-
-        for middleware in self.middlewares:
-            middleware.on_ready()
+        if not self.ready_call:
+            for middleware in self.middlewares:
+                middleware.on_ready()
+            self.ready_call = True
 
     def on_message(self, message):
         """Called whenever a message is posted
