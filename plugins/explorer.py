@@ -117,7 +117,7 @@ class Explorer(Plugin):
             }
             dbentry = self.core.db.servers.find_one({'id': server.id})
             if dbentry:
-                self.core.db.servers.update({'_id': server.id}, {'$set': data}, upsert=False)
+                self.core.db.servers.update({'_id': dbentry['_id']}, {'$set': data}, upsert=False)
             else:
                 self.core.db.servers.insert(data)
 
