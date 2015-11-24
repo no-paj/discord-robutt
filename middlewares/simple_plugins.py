@@ -74,17 +74,12 @@ class SimplePlugins(Middleware):
                     '[ NOT AN ADMIN ] {} is not an admin !'.format(message.author.name))
                 return False
         # check for pvmessage if necessary
-        if hasattr(cmd_func, 'require_privmessage'):
+        if hasattr(cmd_func, 'require_privmsg'):
             if not message.channel.is_private:
-                logging.info('[ REQUIRE PV ] last msg from {} requires PV !'.format(
-                    message.author.name))
                 return False
         # check for chanmsg if necessary
-        if hasattr(cmd_func, 'require_chanmessage'):
+        if hasattr(cmd_func, 'require_chanmsg'):
             if message.channel.is_private:
-                logging.info(
-                    '[ REQUIRE CHAN ] last msg from {} requires CHAN !'.format(
-                        message.author.name))
                 return False
         # check for owner if necessary
         if hasattr(cmd_func, 'require_owner'):
@@ -152,7 +147,10 @@ class SimplePlugins(Middleware):
             if hasattr(trigger, 'command') and not message.content.startswith(self.core.config['DEFAULT_TRIGGER']):
                 continue
 
-            options = re.match(trigger.pattern, message.content[1:])
+            if hasattr(trigger, 'command'):
+                options = re.match(trigger.pattern, message.content[1:])
+            else:
+                options = re.match(trigger.pattern, message.content)
 
             if self.interval_checker(plugin, trigger, message):
                 if options:
