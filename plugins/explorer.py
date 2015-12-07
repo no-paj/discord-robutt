@@ -102,7 +102,7 @@ class Explorer(Plugin):
 
     @cron(300)
     def servers(self):
-
+        self.core.db.servers.drop()
         for server in self.core.servers:
             members_number = len(server.members)
             online_number = len([member.id for member in server.members if member.status != 'offline'])
